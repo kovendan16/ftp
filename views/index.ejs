@@ -1,24 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-</head>
-<body>
-  <% if (locals.fileLink != null) { %>
-    <div style="margin-bottom: 1rem;">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+      }
+
+      form {
+        background-color: #fff;
+        padding: 1rem;
+        border-radius: 5px;
+        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+      }
+
+      input[type="file"] {
+        margin-bottom: 0.5rem;
+      }
+
+      button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      button:hover {
+        background-color: #0069d9;
+      }
+    </style>
+  </head>
+  <body>
+    <% if (locals.fileLink != null) { %>
+    <div style="margin-bottom: 1rem">
       Your file is upload
       <a href="<%= locals.fileLink %>"><%= locals.fileLink %></a>
     </div>
-  <% } %>
-  <form action="/upload" method="post" style="display: grid; gap: .5rem; grid-template-columns: auto 1fr; max-width: 500px; margin: 0 auto;" enctype="multipart/form-data">
-    <label for="file">File:</label>
-    <input type="file" id="file" name="file"  required  />
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" />
-    <button style="grid-column: span 2;" type="submit">Share</button>
-  </form>
-</body>
+    <% } %>
+    <form
+      action="/upload"
+      method="post"
+      style="
+        display: grid;
+        gap: 0.5rem;
+        grid-template-columns: auto 1fr;
+        max-width: 500px;
+        margin: 0 auto;
+      "
+      enctype="multipart/form-data"
+    >
+      <label for="file">File:</label>
+      <input type="file" id="file" name="file" required />
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" />
+      <button style="grid-column: span 2" type="submit">Share</button>
+    </form>
+  </body>
 </html>
