@@ -4,6 +4,8 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const File = require("./models/File");
 const path = require("path");
+const { encryptId, decryptId } = require("./utili/enc"); // Add the path to your encryption.js file
+
 const port = process.env.PORT || 4000;
 const express = require("express");
 const app = express();
@@ -86,9 +88,15 @@ app.post("/upload", async (req, res, next) => {
       }
 
       const file = await fileData.save();
+      const encryptedId = encryptId(file.id);
+      // Get the current timestamp in milliseconds
+      const timestamp = Date.now();
+
+      // Set the link expiration time (e.g., 1 day from now)
+      const expirationTime = timestamp + 2 * 60 * 1000;
 
       res.render("index", {
-        fileLink: `${req.headers.origin}/file/${file.id}`,
+        fileLink: `${req.headers.origin}/file/${encryptedId}?expires=${expirationTime}`,
       });
     }
   });
@@ -97,7 +105,15 @@ app.post("/upload", async (req, res, next) => {
 app.route("/file/:id").get(handleDownload).post(handleDownload);
 
 async function handleDownload(req, res) {
-  const file = await File.findById(req.params.id);
+  const decryptedId = decryptId(req.params.id);
+  const file = await File.findById(decryptedId);
+
+  const expirationTime = parseInt(req.query.expires, 10);
+
+  if (!expirationTime || Date.now() > expirationTime) {
+    res.status(403).send({ message: "The link has expired." });
+    return;
+  }
 
   if (file.password != null) {
     if (req.body.password == null) {
@@ -118,7 +134,7 @@ async function handleDownload(req, res) {
   res.download(file.path, file.originalName, (err) => {
     if (err) {
       console.error(err);
-      res
+      return res
         .status(500)
         .send({ message: "An error occurred while downloading the file." });
     }
